@@ -29,7 +29,9 @@ c_sec = config['imgur']['c_sec']
 access_token = config['imgur']['access']
 refresh_token = config['imgur']['refresh']
 #imgur = ImgurClient(c_id, c_sec, access_token, refresh_token)
+# TODO : refactor code into class structure
 # global vars
+
 mode = 1
 #print(imgur.credits)
 @client.event
