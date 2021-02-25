@@ -6,6 +6,7 @@ import discord
 import datetime
 import random
 import asyncio
+#import asyncpg
 import requests
 import pprint as pp
 from random import randint as ri
@@ -16,10 +17,11 @@ from discord.ext import commands
 from discord import Intents
 from imgurpython import ImgurClient
 
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
 intents_all = Intents.all()
-#client = discord.Client(intents=intents)
 client = commands.Bot(command_prefix="~", intents=intents_all)
 ch_id = config['discord']['ch_id']
 msg_id = config['discord']['msg_id']
@@ -34,6 +36,12 @@ refresh_token = config['imgur']['refresh']
 
 mode = 1
 #print(imgur.credits)
+async def run():
+   try:
+       client.run(config['discord']['token'])
+   except KeyboardInterrupt:
+       await client.logout()
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -42,16 +50,6 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(name='with your soul'))
     
 
-"""
-@client.command(name="hello")
-async def hello(ctx):
-    await ctx.send("Hi, how are you doing today?")
-    await ctx.send(ctx)
-
-@client.command(name="kellyn")
-async def kellyn(ctx):
-    await ctx.send("!hello, how are you doing today Haro?")
-"""
 @client.command(name='s_g')
 @commands.has_role('giveaway')
 async def startg(ctx, mins:int, prize:str):
@@ -154,6 +152,43 @@ async def bonus(ctx, num:int=10, delay:int=2):
         await ctx.send(content='$m', delete_after=delay)
         await asyncio.sleep(delay)
 
+@client.command(name='movie')
+async def mov1(ctx):
+    options = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣']
+    times   = ['⏱️', '⏰', '🕰️'] 
+    emb=discord.Embed(title="Weathering Valentines With You", description='', url="", color=0xff69b4)
+
+    # Add author, thumbnail, fields, and footer to the embed
+    emb.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+    emb.set_thumbnail(url='https://pbs.twimg.com/media/DV7UwvVV4AEKdwH.jpg')
+    emb.set_image(url='https://media.giphy.com/media/Vd8tNvUJl2PXZqOPe4/giphy.gif')
+    emb.add_field(name="Join me for movie and wine night!", value="It has been a while since our last event, and I figured it would be my turn to plan something this time. I will be hosting the movie in discord while we relax and have a good time. This has been in the works for a little while now, but its finally here. Please react with your availability so we can finalize a time! ", inline=False) 
+    emb.add_field(name='Dates:', value='Saturday, Febuary 13 \n Sunday, Febuary 14 \n Friday, Febuary 19 \n Saturday, Febuary 20 \n Sunday, Febuary 21 \n Other  \n 10:00 PM \n 11:00 PM \n 12:00 AM', inline=True)
+    emb.add_field(name='Reaction:', value=f'{options[0]} \n {options[1]} \n {options[2]} \n {options[3]} \n {options[4]} \n {options[5]} \n {times[0]} \n {times[1]} \n {times[2]}', inline=True)
+    emb.set_footer(text="I know yall are single lonely binches so be there or be square")
+
+    msg = await ctx.send(embed=emb)
+    for option in options:
+        await msg.add_reaction(option)
+    for time in times:
+        await msg.add_reaction(time)
+    await ctx.message.delete()
+
+@client.command(name='m2')
+async def mov2(ctx):
+    emb=discord.Embed(title="RSVP: Weathering Valentines With You", description='', url="", color=0xff69b4)
+
+    # Add author, thumbnail, fields, and footer to the embed
+    emb.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+    emb.set_thumbnail(url='https://pbs.twimg.com/media/DV7UwvVV4AEKdwH.jpg')
+    emb.set_image(url='https://i.imgur.com/KFjIZee.jpg')
+    emb.add_field(name="Saturday, Feb 20 @ 11 PM", value="Please react with a :white_check_mark: to confirm that this time works for you, or comment below. Additionally, please make sure to have **wine and snacks** ready for immediate consumption!", inline=False) 
+    emb.set_footer(text="An exciting sneak peek of whats to come")
+
+    msg = await ctx.send(embed=emb)
+    await msg.add_reaction('✅')
+    await ctx.message.delete()
+
 @client.event
 async def on_member_join(member):
     await member.send(f'Welcome to my server {member}!')
@@ -228,4 +263,6 @@ async def assign_role(payload, status):
             print(f'Removed {member} from {role}.')
 
 
+#loop = asyncio.get_event_loop()
+#loop.run_until_complete(run())
 client.run(config['discord']['token'])
